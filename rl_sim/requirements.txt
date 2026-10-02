@@ -1,5 +1,10 @@
-gymnasium==0.29.1
-stable-baselines3==2.2.1
+# Install in the ros-humble distrobox (CPU torch is enough):
+#   pip3 install --user torch --index-url https://download.pytorch.org/whl/cpu
+#   pip3 install --user -r rl_sim/requirements.txt
+#   pip3 uninstall -y setuptools    # torch pulls a setuptools that breaks colcon on Humble
+gymnasium>=0.29
+stable-baselines3>=2.3
+sb3-contrib>=2.3
+tensorboard
 numpy
 opencv-python
-torch

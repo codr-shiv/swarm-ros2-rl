@@ -1,69 +1,51 @@
+"""
+Compare a trained policy with the heuristic, nearest-frontier and random
+choice on the same fixed world, and save the explored map of each.
+
+  cd ~/swarm && python3 rl_sim/evaluate.py --model ~/rl_sim_runs/<run>/best_model.zip --world-seed 42
+"""
+import argparse
 import os
 import sys
-import time
-import cv2
-import numpy as np
 
-# Add root project dir to python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from stable_baselines3 import PPO
-from rl_sim.envs.frontier_env import MultiRobotFrontierEnv
+import cv2  # noqa: E402
+import numpy as np  # noqa: E402
 
-def render_env(obs):
-    """Visualizes the grid map and robots."""
-    grid = obs['global_map']
-    h, w = grid.shape
-    
-    img = np.zeros((h, w, 3), dtype=np.uint8)
-    
-    # Draw Map
-    img[grid == -1] = [100, 100, 100]  # Gray for unknown
-    img[grid == 0] = [255, 255, 255]   # White for free
-    img[grid == 100] = [0, 0, 0]         # Black for obstacle
-    
-    # Draw Frontiers
-    frontiers = obs['frontiers']
-    num_valid = obs['num_valid_frontiers'][0]
-    for i in range(num_valid):
-        fx, fy = frontiers[i]
-        cv2.circle(img, (fx, fy), 0, (0, 0, 255), -1) # Red dots for frontiers
-        
-    # Draw Robots
-    r1, r2 = obs['robot_poses']
-    cv2.circle(img, (r1[0], r1[1]), 1, (255, 0, 0), -1) # Blue robot
-    cv2.circle(img, (r2[0], r2[1]), 1, (0, 255, 0), -1) # Green robot
-    
-    # Scale up for visibility
-    img_scaled = cv2.resize(img, (600, 600), interpolation=cv2.INTER_NEAREST)
-    
-    cv2.imshow("Multi-Robot Exploration RL", img_scaled)
-    cv2.waitKey(100) # 10 FPS
+from rl_sim.envs.frontier_env import FrontierExplorationEnv  # noqa: E402
+from rl_sim.train import run_episode  # noqa: E402
 
-if __name__ == "__main__":
-    env = MultiRobotFrontierEnv()
-    
-    # Check if model exists
-    if not os.path.exists("frontier_policy.zip"):
-        print("Model 'frontier_policy.zip' not found. Please run train.py first.")
-        sys.exit(1)
-        
-    print("Loading model...")
-    model = PPO.load("frontier_policy")
-    
-    print("Starting evaluation episode...")
-    obs, _ = env.reset()
-    done = False
-    
-    total_reward = 0
-    while not done:
-        render_env(obs)
-        
-        # RL Agent predicts the best action
-        action, _states = model.predict(obs, deterministic=True)
-        
-        obs, reward, done, truncated, info = env.step(action)
-        total_reward += reward
-        
-    print(f"Episode finished! Total Reward: {total_reward}")
-    cv2.destroyAllWindows()
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument('--model', help='MaskablePPO .zip (omit to show only the baselines)')
+    p.add_argument('--world-seed', type=int, default=42)
+    p.add_argument('--out-dir', default=None, help='where to save final-map PNGs')
+    args = p.parse_args()
+
+    env = FrontierExplorationEnv(args.world_seed)
+    rng = np.random.default_rng(0)
+    policies = {
+        'heuristic': lambda _o: env.heuristic_action(),
+        'nearest': lambda _o: env.nearest_action(),
+        'random': lambda _o: int(rng.choice(np.flatnonzero(env.action_masks()))),
+    }
+    if args.model:
+        from sb3_contrib import MaskablePPO
+        model = MaskablePPO.load(os.path.expanduser(args.model))
+        policies = {'ppo': lambda o: int(model.predict(o, action_masks=env.action_masks(),
+                                                       deterministic=True)[0]), **policies}
+    out_dir = args.out_dir or (os.path.dirname(os.path.expanduser(args.model)) if args.model else '.')
+    print(f'World {args.world_seed}:')
+    for name, pol in policies.items():
+        ret, t, n, end = run_episode(env, pol)
+        print(f'  {name:9s} return {ret:6.3f} | explored in {t:5.1f} s | {n} decisions | {end}')
+        img = cv2.resize(env.render(), (510, 510), interpolation=cv2.INTER_NEAREST)
+        cv2.imwrite(os.path.join(out_dir, f'final_map_{name}.png'), img)
+    print(f'Final maps saved in {out_dir}')
+
+
+if __name__ == '__main__':
+    main()
