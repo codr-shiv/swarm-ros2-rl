@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import GroupAction, IncludeLaunchDescription, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnShutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -47,7 +48,7 @@ def generate_launch_description():
     sdf_template_path = os.path.join(
         tb3_gazebo_dir, "models", model_folder, "model.sdf"
     )
-    tmp_prefix = f"/tmp/{model_folder}_tmp"
+    tmp_prefix = f"/tmp/{model_folder}_tmp_{os.getpid()}"   # unique per launch
 
     seed_str = os.environ.get("GAZEBO_WORLD_SEED", None)
     seed = int(seed_str) if seed_str is not None else None
@@ -80,7 +81,9 @@ def generate_launch_description():
     gzclient_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, "launch", "gzclient.launch.py")
-        )
+        ),
+        # gui:=false runs Gazebo headless (no window), e.g. for automated tests
+        condition=IfCondition(LaunchConfiguration("gui", default="true")),
     )
 
     ld = LaunchDescription([gzserver_cmd, gzclient_cmd])

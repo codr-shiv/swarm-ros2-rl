@@ -1,10 +1,10 @@
 """
-Ground-truth 2D world, identical to the Gazebo world for the same seed.
+Ground-truth 2D arena, identical to the Gazebo arena with the same number.
 
-generate_random_world(seed) (used by spawn_two_turtlebots.launch.py) writes
-an SDF file; this module parses that file and rasterises its walls and
-obstacles onto a 0.05 m grid (the SLAM map resolution), so a policy trained
-here sees the same layout as the robots in Gazebo with GAZEBO_WORLD_SEED=seed.
+generate_random_world() (used by spawn_two_turtlebots.launch.py) writes an
+SDF file; this module parses that file and rasterises its walls and
+obstacles onto a 0.05 m grid (the SLAM map resolution), so the 2D simulator
+and Gazebo (GAZEBO_WORLD_SEED=<number>) contain exactly the same arena.
 """
 import os
 import xml.etree.ElementTree as ET
@@ -15,6 +15,7 @@ import numpy as np
 
 from multi_robot_exploration.generate_random_world import generate_random_world
 
+DEFAULT_WORLD = 42         # benchmark arena used for training and evaluation
 RESOLUTION = 0.05          # m per cell, same as slam_toolbox / map merge
 HALF_EXTENT = 4.25         # m, covers the 8 m arena plus its walls
 ROBOT_INFLATION = 0.20     # m, robot radius 0.105 + margin (Nav2 inflation)
@@ -23,7 +24,7 @@ FREE, OCCUPIED = 0, 100
 
 @dataclass
 class World:
-    seed: int
+    world_id: int
     grid: np.ndarray        # (h, w) uint8, FREE / OCCUPIED ground truth
     nav_free: np.ndarray    # (h, w) bool, where the robot centre may be
     component: np.ndarray   # (h, w) int32, connected regions of nav_free
@@ -75,11 +76,11 @@ def _rasterise(sdf_path):
 _CACHE = {}
 
 
-def load_world(seed):
-    """Build (and cache) the World for a GAZEBO_WORLD_SEED value."""
-    if seed in _CACHE:
-        return _CACHE[seed]
-    path, spawns_xy = generate_random_world(seed=seed)
+def load_world(world_id=DEFAULT_WORLD):
+    """Build (and cache) the arena that Gazebo builds for GAZEBO_WORLD_SEED=world_id."""
+    if world_id in _CACHE:
+        return _CACHE[world_id]
+    path, spawns_xy = generate_random_world(seed=world_id)
     try:
         grid = _rasterise(path)
     finally:
@@ -90,7 +91,7 @@ def load_world(seed):
     nav_free = cv2.dilate((grid == OCCUPIED).astype(np.uint8), kernel) == 0
     _, component = cv2.connectedComponents(nav_free.astype(np.uint8), connectivity=8)
 
-    world = World(seed, grid, nav_free, component.astype(np.int32), [])
+    world = World(world_id, grid, nav_free, component.astype(np.int32), [])
     for x, y in spawns_xy:
         row, col = world.to_cell(x, y)
         if not nav_free[row, col]:        # spawn too close to an obstacle: nearest free cell
@@ -98,5 +99,5 @@ def load_world(seed):
             k = int(np.argmin((rr - row) ** 2 + (cc - col) ** 2))
             row, col = int(rr[k]), int(cc[k])
         world.spawns.append((row, col))
-    _CACHE[seed] = world
+    _CACHE[world_id] = world
     return world

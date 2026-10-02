@@ -1,0 +1,5 @@
+policy,return,explore_time_s,decisions
+ppo,1.8265,65.5,7
+heuristic,1.7508,72.5,8
+nearest,1.425,105.5,9
+random,1.0533,143.0,9

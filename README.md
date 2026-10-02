@@ -2,7 +2,7 @@
 
 **Two TurtleBot3 robots autonomously exploring unknown environments using coordinated frontier-based exploration with ROS 2 and Nav2.**
 
-> A complete multi-robot autonomy stack: Gazebo simulation → per-robot SLAM → map merging → Nav2 navigation → intelligent frontier coordination with spatial partitioning and collision avoidance.
+> A complete multi-robot autonomy stack: Gazebo simulation → per-robot SLAM → map merging → Nav2 navigation → frontier coordination, plus a **reinforcement-learning (PPO) frontier policy** that maps the arena **15 % more area in 240 s than the hand-designed heuristic** (8/8 paired Gazebo runs, p = 0.008). See [Reinforcement Learning](#reinforcement-learning-ppo-frontier-selection).
 
 ---
 
@@ -14,6 +14,7 @@
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Reinforcement Learning: PPO Frontier Selection](#reinforcement-learning-ppo-frontier-selection)
 - [Pipeline Deep-Dive](#pipeline-deep-dive)
 - [Configuration Reference](#configuration-reference)
 - [RViz Visualization](#rviz-visualization)
@@ -30,7 +31,8 @@ This project implements a **fully autonomous multi-robot exploration system** wh
 - **Hungarian-style cost assignment** — optimal frontier-to-robot matching using distance, separation penalty, and region bias
 - **Inter-robot collision avoidance** — dynamic pause/resume when robots approach each other
 - **Custom map merging** — fuses individual SLAM maps into a single global occupancy grid using known spawn transforms
-- **Randomized worlds** — procedurally generated Gazebo environments with walls and obstacles for testing generalization
+- **Randomized worlds** — procedurally generated Gazebo environments with walls and obstacles
+- **RL frontier selection** — a PPO policy trained in a fast 2D simulator of the arena, transferred zero-shot to the Gazebo stack, where it out-explores the hand-designed heuristic
 
 ---
 
@@ -103,14 +105,13 @@ Every file in this package and what it does:
 | [`map_merge_node.py`](multi_robot_exploration/map_merge_node.py) | Fuses `/robot1/map` + `/robot2/map` → `/map` using known spawn transforms. Vectorized NumPy rasterization | ✅ Active |
 | [`generate_random_world.py`](multi_robot_exploration/generate_random_world.py) | Procedurally generates Gazebo SDF worlds with random box/cylinder obstacles, boundary walls, and collision-free spawn zones | ✅ Active |
 | [`waypoint_navigator.py`](multi_robot_exploration/waypoint_navigator.py) | Demo node — sends pre-defined waypoints to showcase map merging without frontier logic | ✅ Demo |
-| [`frontier_exploration.py`](multi_robot_exploration/frontier_exploration.py) | Single-robot frontier explorer (v1) — superseded by `frontier_coordinator.py` | ⚠️ Deprecated |
 | [`__init__.py`](multi_robot_exploration/__init__.py) | Package init | — |
 
 ### Launch Files (`launch/`)
 
 | File | What it launches | Order |
 |------|-----------------|-------|
-| [`spawn_two_turtlebots.launch.py`](launch/spawn_two_turtlebots.launch.py) | Gazebo world + 2 namespaced TurtleBot3 robots with patched SDF (namespace-safe TF frames, custom colors) | **1st** |
+| [`spawn_two_turtlebots.launch.py`](launch/spawn_two_turtlebots.launch.py) | Gazebo world + 2 namespaced TurtleBot3 robots with patched SDF (namespace-safe TF frames, custom colors). `gui:=false` runs headless | **1st** |
 | [`multi_robot_slam.launch.py`](launch/multi_robot_slam.launch.py) | One `slam_toolbox` (async) per robot, producing `/robot1/map` and `/robot2/map` | **2nd** |
 | [`map_merge.launch.py`](launch/map_merge.launch.py) | `map_merge_node` — fuses individual maps into `/map` | **3rd** |
 | [`nav2_bringup_multi.launch.py`](launch/nav2_bringup_multi.launch.py) | Full Nav2 stack per robot (controller, planner, behavior, BT navigator, smoother, lifecycle manager with autostart) | **4th** |
@@ -142,7 +143,17 @@ Every file in this package and what it does:
 | File | Contents |
 |------|----------|
 | [`gazebo_visual_guide.md`](docs/gazebo_visual_guide.md) | Guide for disabling LiDAR ray visualization in Gazebo |
-| [`rviz_visual_enhancement_guide.md`](rviz_visual_enhancement_guide.md) | Color palette and styling guide for cinematic RViz demos |
+| [`rviz_visual_enhancement_guide.md`](docs/rviz_visual_enhancement_guide.md) | Color palette and styling guide for cinematic RViz demos |
+
+### Reinforcement Learning
+
+| Path | Contents |
+|------|----------|
+| [`rl_sim/`](rl_sim/) | 2D simulator, PPO training, Gazebo policy node, headless benchmark, analysis and graph scripts — see [rl_sim/README.md](rl_sim/README.md) |
+| [`models/ppo_frontier_policy.zip`](models/) | Trained PPO policy, ready to run |
+| [`results/`](results/) | Raw data: training curve, 2D simulator comparison, per-second coverage logs of every Gazebo run |
+| [`graphs/`](graphs/) | All comparison charts (SVG), generated from `results/` |
+| [`heuristic-vs-rl.md`](heuristic-vs-rl.md) | Full evaluation report: protocol, results, statistics, analysis |
 
 ### Test Files (`test/`)
 
@@ -170,9 +181,15 @@ Every file in this package and what it does:
   ```bash
   sudo apt install ros-humble-slam-toolbox
   ```
-- **Python dependencies**: `numpy`, `opencv-python` (cv2)
+- **Python dependencies**: `numpy`, `opencv` (cv2)
   ```bash
-  pip install numpy opencv-python
+  sudo apt install python3-numpy python3-opencv
+  ```
+- **For the RL part only**: PyTorch (CPU), Gymnasium, Stable-Baselines3, sb3-contrib
+  ```bash
+  pip3 install --user torch --index-url https://download.pytorch.org/whl/cpu
+  pip3 install --user -r rl_sim/requirements.txt
+  pip3 uninstall -y setuptools   # torch installs a setuptools that breaks colcon on Humble
   ```
 
 ### Environment Setup
@@ -188,15 +205,23 @@ source ~/.bashrc
 
 ## Installation
 
-```bash
-# Clone into your ROS 2 workspace
-cd ~/ros2_ws/src
-git clone <this-repo-url> multi_robot_exploration
+The repository root is the ROS 2 package, so it can be built in place:
 
-# Build
-cd ~/ros2_ws
-colcon build --packages-select multi_robot_exploration
+```bash
+git clone <this-repo-url> ~/swarm
+cd ~/swarm
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install
 source install/setup.bash
+```
+
+**Using a distrobox** (e.g. ROS 2 Humble on a non-Ubuntu host): run `distrobox enter ros-humble` in every new terminal, then build as above. A convenient `~/.bashrc` block inside the box:
+```bash
+source /opt/ros/humble/setup.bash
+source ~/swarm/install/setup.bash
+export TURTLEBOT3_MODEL=burger
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/humble/share/turtlebot3_gazebo/models
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ```
 
 ---
@@ -224,16 +249,17 @@ ros2 launch multi_robot_exploration nav2_bringup_multi.launch.py
 ros2 launch multi_robot_exploration frontier_exploration.launch.py
 ```
 
-### Optional: Randomized Worlds
+### Worlds and Headless Mode
 
 ```bash
-# Set a seed for reproducible worlds
-export GAZEBO_WORLD_SEED=42
-ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py
+# Select a specific arena by number (42 is the benchmark arena used by the RL experiments)
+GAZEBO_WORLD_SEED=42 ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py
 
-# Or use TurtleBot3 house world instead of random
-export USE_HOUSE=1
-ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py
+# Run Gazebo without a window
+ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py gui:=false
+
+# Or use the TurtleBot3 house world
+USE_HOUSE=1 ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py
 ```
 
 ### Alternative: Waypoint Demo (map merge showcase)
@@ -248,6 +274,60 @@ ros2 launch multi_robot_exploration waypoint_demo.launch.py
 ```bash
 rviz2 -d $(ros2 pkg prefix multi_robot_exploration)/share/multi_robot_exploration/config/multi_robot_exploration_cinematic.rviz
 ```
+
+---
+
+## Reinforcement Learning: PPO Frontier Selection
+
+The exploration "brain" decides **which frontier each robot explores next**. In addition to the hand-designed cost of `frontier_coordinator.py` (the *heuristic*), this repo contains a **PPO policy** that learned this decision:
+
+1. **Train** in `rl_sim/`, a fast 2D simulator of the benchmark arena. It uses the same obstacles (parsed from the Gazebo world file), the same frontier detection, a 3.5 m lidar, and A* motion at TurtleBot3 speed. Training takes ~25 min on a laptop CPU.
+2. **Transfer zero-shot** to the full Gazebo stack. `rl_sim/ros_policy_node.py` replaces terminal 5: it rebuilds the policy's input from `/map`, TF and Nav2 every second, and sends the chosen frontier to Nav2.
+
+### Results (benchmark arena, 8 alternating paired Gazebo runs of 240 s)
+
+| | PPO | Heuristic | |
+|---|---|---|---|
+| Known area after 240 s | **41.8 ± 2.5 m²** | 36.2 ± 4.0 m² | +15 %, PPO better in **8/8** pairs, p = 0.008 |
+| Time to map 30 m² | **121 ± 26 s** | 173 ± 44 s | 30 % faster, p = 0.031 |
+| Time to explore fully (2D simulator) | **65.5 s** | 72.5 s | 10 % faster |
+
+![Known area over time in Gazebo](graphs/04_gazebo_coverage_over_time.svg)
+
+All charts are in [`graphs/`](graphs/), and the full report is in [heuristic-vs-rl.md](heuristic-vs-rl.md).
+
+### Run the trained policy in Gazebo
+
+```bash
+# Terminal 1: benchmark arena
+GAZEBO_WORLD_SEED=42 ros2 launch multi_robot_exploration spawn_two_turtlebots.launch.py
+# Terminals 2-4: SLAM, map merge, Nav2 (as in Usage above)
+ros2 launch multi_robot_exploration multi_robot_slam.launch.py
+ros2 launch multi_robot_exploration map_merge.launch.py
+ros2 launch multi_robot_exploration nav2_bringup_multi.launch.py
+# Terminal 5: the PPO policy instead of frontier_exploration.launch.py
+cd ~/swarm && python3 rl_sim/ros_policy_node.py --model models/ppo_frontier_policy.zip
+```
+`--policy heuristic` runs the same node with the hand-designed cost, for side-by-side comparison.
+
+### Headless benchmark (no windows, one command per run, ~5 min each)
+
+```bash
+cd ~/swarm
+rl_sim/gazebo_test.sh ppo 240 models/ppo_frontier_policy.zip
+rl_sim/gazebo_test.sh heuristic 240
+python3 rl_sim/analyze_gazebo_tests.py      # statistics over all runs in results/gazebo_runs/
+python3 rl_sim/make_graphs.py               # regenerate every chart in graphs/
+```
+
+### Train a new policy
+
+```bash
+cd ~/swarm
+python3 rl_sim/train.py                                     # ~25 min, prints progress vs the heuristic
+python3 rl_sim/evaluate.py --model ~/rl_sim_runs/ppo_<time>/best_model.zip   # 2D comparison
+```
+Details: [rl_sim/README.md](rl_sim/README.md).
 
 ---
 

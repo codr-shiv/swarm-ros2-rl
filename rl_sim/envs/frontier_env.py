@@ -1,5 +1,5 @@
 """
-Two-robot frontier exploration, decision-level, on a fixed Gazebo world.
+Two-robot frontier exploration, decision-level, on the Gazebo arena.
 
 One step = one decision: which frontier the robot that needs a goal should
 explore next. The robot then follows an A* path at TurtleBot3 speed while
@@ -9,9 +9,9 @@ mirrors the ROS stack (frontier_coordinator picks a goal, Nav2 drives).
 Why this converges (unlike the per-cell version):
   - actions are stable: slot k = the k-th nearest reachable frontier, and
     invalid slots are masked (MaskablePPO), so every action is meaningful;
-  - one action = one whole trip, so episodes are ~30-60 decisions, not 500;
-  - the observation is a compact feature vector including positions, so a
-    fixed world can be learned; the simulator is deterministic (no noise);
+  - one action = one whole trip, so episodes are ~10 decisions, not hundreds;
+  - the observation is a compact feature vector including positions;
+    the simulator is deterministic (no noise);
   - reward is small and well scaled: +0.1 per new m², -0.01 per second.
 """
 import math
@@ -24,7 +24,7 @@ from gymnasium import spaces
 from rl_sim.core.frontiers import detect_frontiers
 from rl_sim.core.lidar import Lidar
 from rl_sim.core.planner import astar
-from rl_sim.core.world import FREE, load_world
+from rl_sim.core.world import DEFAULT_WORLD, FREE, load_world
 
 MAX_CANDIDATES = 12
 CANDIDATE_FEATURES = 12
@@ -53,9 +53,9 @@ HEUR_SEPARATION, HEUR_REGION = 50.0, 50.0
 class FrontierExplorationEnv(gym.Env):
     metadata = {'render_modes': ['rgb_array']}
 
-    def __init__(self, world_seed=42):
+    def __init__(self, world=DEFAULT_WORLD):
         super().__init__()
-        self.world = load_world(world_seed)
+        self.world = load_world(world)
         self.lidar = Lidar(self.world.resolution)
         self.observation_space = spaces.Box(-5.0, 5.0, (OBS_DIM,), np.float32)
         self.action_space = spaces.Discrete(MAX_CANDIDATES)
