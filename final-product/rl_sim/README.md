@@ -8,7 +8,7 @@ A fast 2D simulator of the two-robot exploration task, used to train a PPO polic
 | Map | shared belief grid (unknown / free / occupied) | merged SLAM map |
 | Sensor | 360-ray lidar, 3.5 m | LDS-01, 3.5 m |
 | Frontiers | exact detection of `frontier_coordinator.py` (7×7 inflation, opening, > 15 px, 1.5 m dedup) | `frontier_coordinator.py` |
-| Motion | 8-connected A* on the map inflated by 0.2 m, 0.15 m/s | Nav2 (Theta*, DWB, 0.15 m/s) |
+| Motion | 8-connected A* on the map inflated by 0.3 m (robot radius + margin, consistent with Nav2's 0.35 m inflation), 0.15 m/s | Nav2 (Theta*, DWB, 0.15 m/s) |
 | Speed | ~0.1 s per episode | ~5 min per episode |
 
 ## The learning problem
@@ -68,7 +68,7 @@ python3 rl_sim/make_graphs.py
 
 **Training output:**
 ```
-[  20008 decisions] policy: return 1.827, explored in 65.5 s (7 decisions, explored) | heuristic 1.751 / 72.5 s  <- best, saved
+[  30008 decisions] policy: return 1.810, explored in  67.0 s (7 decisions, explored) | heuristic 1.375 / 111.0 s  <- best, saved
 ```
 The run directory `~/rl_sim_runs/ppo_<time>/` gets:
 - `best_model.zip` and `final_model.zip`
@@ -116,8 +116,9 @@ python3 rl_sim/ros_policy_node.py --model models/ppo_frontier_policy.zip
 
 ## Results
 On the benchmark arena, over 8 alternating paired Gazebo runs:
-- **Area:** PPO mapped **41.8 ± 2.5 m²** after 240 s, against **36.2 ± 4.0 m²** for the heuristic. That's +15 %, better in 8/8 pairs (exact paired permutation p = 0.008).
-- **Speed:** it reached 30 m² about 30 % sooner.
+- **Speed:** PPO reached 30 m² in **127 ± 15 s**, against **160 ± 30 s** for the heuristic. That's −21 %, better in 8/8 pairs (exact paired permutation p = 0.008).
+- **Area at 180 s:** PPO had +13 % more area mapped, better in 8/8 pairs. At 240 s the gap narrows to +7 % (not significant).
+- **2D simulator:** PPO explores the arena in 67 s against 111 s for the heuristic.
 
 Full analysis: [../docs/heuristic-vs-rl.md](../docs/heuristic-vs-rl.md). Charts: [../graphs/](../graphs/).
 

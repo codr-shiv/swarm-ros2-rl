@@ -1,0 +1,17 @@
+run,policy,start_or_goal_in_obstacle,no_valid_trajectories,backup_collision_ahead
+heuristic_20261002_130026,heuristic,46,25,2
+heuristic_20261002_131148,heuristic,57,58,2
+heuristic_20261002_140043,heuristic,13,76,2
+heuristic_20261002_141156,heuristic,67,0,0
+heuristic_20261002_142308,heuristic,45,101,5
+heuristic_20261002_144953,heuristic,17,21,0
+heuristic_20261002_161503,heuristic,57,11,3
+heuristic_20261002_162631,heuristic,136,32,20
+ppo_20261002_125418,ppo,45,133,5
+ppo_20261002_130611,ppo,35,7,1
+ppo_20261002_135506,ppo,1,13,0
+ppo_20261002_140618,ppo,48,5,7
+ppo_20261002_141731,ppo,14,21,1
+ppo_20261002_144415,ppo,24,28,8
+ppo_20261002_160923,ppo,26,8,0
+ppo_20261002_162050,ppo,43,6,1

@@ -18,7 +18,7 @@ from multi_robot_exploration.generate_random_world import generate_random_world
 DEFAULT_WORLD = 42         # benchmark arena used for training and evaluation
 RESOLUTION = 0.05          # m per cell, same as slam_toolbox / map merge
 HALF_EXTENT = 4.25         # m, covers the 8 m arena plus its walls
-ROBOT_INFLATION = 0.20     # m, robot radius 0.105 + margin (Nav2 inflation)
+ROBOT_INFLATION = 0.30     # m, robot radius 0.105 + margin; goals and paths keep this clearance (matches Nav2 inflation 0.35)
 FREE, OCCUPIED = 0, 100
 
 

@@ -17,11 +17,11 @@ python3 rl_sim/evaluate.py --model models/ppo_frontier_policy.zip --video --out-
 
 | Video | What it demonstrates | Outcome |
 |---|---|---|
-| [`sim2d_ppo_vs_heuristic.mp4`](sim2d_ppo_vs_heuristic.mp4) ([GIF](sim2d_ppo_vs_heuristic.gif)) | **The main result.** Left: the trained PPO policy. Right: the hand-designed heuristic of `frontier_coordinator.py`, in the same arena from the same start. | PPO maps faster: at t = 20.5 s it knows 48.4 m², against 43.3 m² for the heuristic. It finishes in 65.5 s vs 72.5 s. |
-| [`sim2d_ppo.mp4`](sim2d_ppo.mp4) (13 s) | **The RL policy alone.** Each robot picks one of the 12 nearest reachable frontiers; the robots split the arena without explicit partitioning rules. | Full exploration in 65.5 s with 7 decisions. |
-| [`sim2d_heuristic.mp4`](sim2d_heuristic.mp4) (15 s) | **The heuristic brain.** It uses distance plus penalties for crowding the other robot's goal or entering its half. | Full exploration in 72.5 s with 8 decisions. |
-| [`sim2d_nearest.mp4`](sim2d_nearest.mp4) (21 s) | **Baseline: nearest frontier.** Each robot always takes the closest frontier, with no coordination. | Full exploration in 105.5 s. |
-| [`sim2d_random.mp4`](sim2d_random.mp4) (29 s) | **Baseline: random valid frontier.** A lower bound on performance. | Full exploration in 143.0 s. |
+| [`sim2d_ppo_vs_heuristic.mp4`](sim2d_ppo_vs_heuristic.mp4) ([GIF](sim2d_ppo_vs_heuristic.gif)) | **The main result.** Left: the trained PPO policy. Right: the hand-designed heuristic of `frontier_coordinator.py`, in the same arena from the same start. | PPO maps faster: at t = 20.5 s it knows 48.3 m², against 43.1 m² for the heuristic. It finishes in 67.0 s vs 111.0 s. |
+| [`sim2d_ppo.mp4`](sim2d_ppo.mp4) (13 s) | **The RL policy alone.** Each robot picks one of the 12 nearest reachable frontiers; the robots split the arena without explicit partitioning rules. | Full exploration in 67.0 s with 7 decisions. |
+| [`sim2d_heuristic.mp4`](sim2d_heuristic.mp4) (22 s) | **The heuristic brain.** It uses distance plus penalties for crowding the other robot's goal or entering its half. | Full exploration in 111.0 s with 9 decisions. |
+| [`sim2d_nearest.mp4`](sim2d_nearest.mp4) (22 s) | **Baseline: nearest frontier.** Each robot always takes the closest frontier, with no coordination. | Full exploration in 112.0 s. |
+| [`sim2d_random.mp4`](sim2d_random.mp4) (33 s) | **Baseline: random valid frontier.** A lower bound on performance. | Full exploration in 163.0 s. |
 
 ## The full ROS 2 stack in Gazebo
 The Gazebo evaluation (8 paired headless runs) is logged as coverage data, not video: see `results/gazebo_runs/` and `graphs/04_gazebo_coverage_over_time.svg`.

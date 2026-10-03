@@ -2,7 +2,7 @@
 
 **Two TurtleBot3 robots cooperatively map an unknown arena with ROS 2 Humble: Gazebo simulation, per-robot SLAM, map merging, Nav2 navigation, and a frontier-selection "brain" that is either hand-designed (heuristic) or learned with reinforcement learning (PPO).**
 
-On the benchmark arena, the PPO policy mapped **15 % more area in 240 s** than the heuristic. It was better in **8/8** paired Gazebo runs (p = 0.008), and reached 30 m² **30 % sooner**. Full report: [docs/heuristic-vs-rl.md](docs/heuristic-vs-rl.md).
+On the benchmark arena, the PPO policy maps **faster** than the heuristic. It reached 30 m² **21 % sooner** and had **13 % more area mapped at 180 s**, better in **8/8** paired Gazebo runs on both metrics (p = 0.008). Full report: [docs/heuristic-vs-rl.md](docs/heuristic-vs-rl.md).
 
 ![PPO vs heuristic, 2D simulator](media/demo-videos/sim2d_ppo_vs_heuristic.gif)
 
@@ -30,7 +30,7 @@ On the benchmark arena, the PPO policy mapped **15 % more area in 240 s** than t
 | Simulation | Gazebo Classic, `spawn_two_turtlebots.launch.py`, `generate_random_world.py` | Builds a random 8 × 8 m arena with box and cylinder obstacles, and spawns two namespaced TurtleBot3 Burgers (`robot1`, `robot2`) with lidar |
 | Mapping | `slam_toolbox` ×2, `multi_robot_slam.launch.py` | Each robot builds its own occupancy map, `/robotN/map` |
 | Map merging | `map_merge_node.py` | Fuses both maps into one `/map` (occupied wins), and publishes the static TF `map → robotN/map` |
-| Navigation | Nav2 ×2, `nav2_bringup_multi.launch.py` | Theta* global planner, DWB controller, recoveries; accepts `NavigateToPose` goals |
+| Navigation | Nav2 ×2, `nav2_bringup_multi.launch.py` | Theta* global planner, DWB controller, recoveries; accepts `NavigateToPose` goals. The global costmap uses live lidar only (no static SLAM layer), with a 0.35 m inflation. See [docs/navigation-fix.md](docs/navigation-fix.md) |
 | Exploration brain | `frontier_coordinator.py` **or** `rl_sim/ros_policy_node.py` | Detects frontiers (known/unknown boundaries) on `/map`, and decides which frontier each robot should drive to next |
 
 **The two brains:**
@@ -156,7 +156,7 @@ final-product/
 ├── models/ppo_frontier_policy.zip                trained policy
 ├── results/                                      raw data: training curves, 2D comparison, Gazebo runs
 ├── graphs/                                       all charts (SVG), generated from results/
-├── docs/                                         evaluation report + architecture diagrams
+├── docs/                                         evaluation report, navigation fix, architecture diagrams
 ├── media/demo-videos/                            demo videos with descriptions
 └── presentation/                                 project presentation (PPTX)
 ```
@@ -172,9 +172,10 @@ final-product/
 
 | | PPO | Heuristic | |
 |---|---|---|---|
-| Known area after 240 s (Gazebo, 8 paired runs) | **41.8 ± 2.5 m²** | 36.2 ± 4.0 m² | +15 %, 8/8 pairs, p = 0.008 |
-| Time to map 30 m² (Gazebo) | **121 ± 26 s** | 173 ± 44 s | −30 %, p = 0.031 |
-| Time to explore fully (2D simulator) | **65.5 s** | 72.5 s | −10 % |
+| Time to map 30 m² (Gazebo, 8 paired runs) | **127 ± 15 s** | 160 ± 30 s | −21 %, 8/8 pairs, p = 0.008 |
+| Known area at 180 s (Gazebo) | **36.7 ± 2.8 m²** | 32.4 ± 3.8 m² | +13 %, 8/8 pairs, p = 0.008 |
+| Known area at 240 s (Gazebo) | 41.3 ± 2.3 m² | 38.4 ± 2.2 m² | +7 %, 6/8 pairs, p = 0.055 (not significant) |
+| Time to explore fully (2D simulator) | **67.0 s** | 111.0 s | −40 % |
 
 ![Known area over time in Gazebo](graphs/04_gazebo_coverage_over_time.svg)
 ![PPO training curves](graphs/20_training_dashboard.svg)
@@ -205,7 +206,9 @@ See [media/demo-videos/README.md](media/demo-videos/README.md) for what each vid
 | Nav2 (`config/nav2_params_robot*.yaml`) | Value |
 |---|---|
 | Global planner | Theta* (`nav2_theta_star_planner`), unknown space allowed |
-| Local controller | DWB, `max_vel_x` 0.15 m/s, `max_vel_theta` 1.0 rad/s, 20 Hz |
+| Global costmap | live lidar obstacle layer only (no static SLAM layer), fixed 10 × 10 m window |
+| Inflation | `inflation_radius` 0.35 m, `cost_scaling_factor` 3.5, `footprint_padding` 0.02 m (robot radius 0.105 m) |
+| Local controller | DWB, `max_vel_x` 0.15 m/s, `max_vel_theta` 1.0 rad/s, 20 Hz, `ObstacleFootprint.scale` 0.5 |
 | Goal tolerance | 0.25 m |
 | Costmap resolution | 0.05 m (matches SLAM) |
 
@@ -217,6 +220,7 @@ For the RL hyperparameters, see [rl_sim/README.md](rl_sim/README.md).
 
 | Problem | What to do |
 |---|---|
+| Robots stuck next to an obstacle | Fixed: see [docs/navigation-fix.md](docs/navigation-fix.md). If it comes back, check that the global costmap has no `static_layer`, and count stuck messages with `python3 rl_sim/count_nav2_failures.py results/gazebo_runs` |
 | Robots don't move | Check Nav2 is active: `ros2 lifecycle get /robot1/bt_navigator`. Relaunch terminal 4 if it isn't. |
 | Maps don't merge / rooms appear twice | `config/map_merge_params.yaml` offsets must stay 0. Gazebo's odom already starts at the world spawn pose. |
 | `ddsi_udp_conn_write ... failed` or nodes can't find each other | Keep Wi-Fi/Ethernet connected, or run `sudo ip link set lo multicast on` in a host terminal |
@@ -231,7 +235,7 @@ For the RL hyperparameters, see [rl_sim/README.md](rl_sim/README.md).
 **Limitations:**
 - **Benchmark arena only.** The RL results are for the benchmark arena the policy was trained on. Performance on other layouts hasn't been measured, so use heuristic mode there.
 - **Sim-to-sim gap.** The 2D simulator assumes ideal sensing and navigation. In Gazebo, mapping is 3–4× slower, because SLAM builds the map gradually and Nav2 adds rotations and recoveries. The relative advantage carries over, but absolute times differ.
-- **Evaluation size.** 8 paired runs of 240 s. The headline result is significant (p = 0.008), but full-exploration time in Gazebo hasn't been measured.
+- **Evaluation size.** 8 paired runs of 240 s. The headline results are significant (p = 0.008); the final-area gap at 240 s is not. Full-exploration time in Gazebo hasn't been measured.
 - **Simulation only.** Not yet tested on physical TurtleBot3 robots.
 - **Two robots.** The node, the features and the map merge assume exactly `robot1` and `robot2`.
 
