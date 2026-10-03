@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" font-family="sans-serif" font-size="13">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker></defs>
+<rect width="1100" height="520" fill="white"/>
+<text x="550.0" y="30" text-anchor="middle" font-size="20" font-weight="bold">RL pipeline: train in the 2D simulator, deploy zero-shot to Gazebo</text>
+<path d="M240,130.0 L270.0,130.0 L270.0,130.0 L300,130.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M500,130.0 L530.0,130.0 L530.0,130.0 L560,130.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M780,130.0 L810.0,130.0 L810.0,130.0 L840,130.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M940.0,170 L940.0,215.0 L940.0,215.0 L940.0,260" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M840,295.0 L810.0,295.0 L810.0,300.0 L780,300.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M500,300.0 L530.0,300.0 L530.0,300.0 L560,300.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M670.0,340 L670.0,375.0 L670.0,375.0 L670.0,410" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="40" y="90" width="200" height="80" rx="9" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.8"/>
+<text x="140.0" y="118" text-anchor="middle" font-weight="bold">generate_random_world</text>
+<text x="140.0" y="134" text-anchor="middle" fill="#444" font-size="12">(same arena file</text>
+<text x="140.0" y="150" text-anchor="middle" fill="#444" font-size="12">as Gazebo)</text>
+<rect x="300" y="90" width="200" height="80" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="400.0" y="118" text-anchor="middle" font-weight="bold">core/world.py</text>
+<text x="400.0" y="134" text-anchor="middle" fill="#444" font-size="12">rasterise 0.05 m grid</text>
+<text x="400.0" y="150" text-anchor="middle" fill="#444" font-size="12">+ inflated nav map</text>
+<rect x="560" y="90" width="220" height="80" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="670.0" y="126" text-anchor="middle" font-weight="bold">FrontierExplorationEnv</text>
+<text x="670.0" y="142" text-anchor="middle" fill="#444" font-size="12">lidar · frontiers · A* motion</text>
+<rect x="840" y="90" width="200" height="80" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="940.0" y="118" text-anchor="middle" font-weight="bold">MaskablePPO</text>
+<text x="940.0" y="134" text-anchor="middle" fill="#444" font-size="12">8 parallel envs</text>
+<text x="940.0" y="150" text-anchor="middle" fill="#444" font-size="12">300k decisions</text>
+<rect x="840" y="260" width="200" height="70" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="940.0" y="299" text-anchor="middle" font-weight="bold">ppo_frontier_policy.zip</text>
+<rect x="560" y="260" width="220" height="80" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="670.0" y="296" text-anchor="middle" font-weight="bold">ros_policy_node.py</text>
+<text x="670.0" y="312" text-anchor="middle" fill="#444" font-size="12">real state → same env code</text>
+<rect x="300" y="260" width="200" height="80" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="400.0" y="296" text-anchor="middle" font-weight="bold">Gazebo + SLAM</text>
+<text x="400.0" y="312" text-anchor="middle" fill="#444" font-size="12">+ map merge + Nav2</text>
+<rect x="560" y="410" width="220" height="70" rx="9" fill="#F2F2F2" stroke="#555555" stroke-width="1.8"/>
+<text x="670.0" y="441" text-anchor="middle" font-weight="bold">gazebo_test.sh → results/</text>
+<text x="670.0" y="457" text-anchor="middle" fill="#444" font-size="12">analyze · make_graphs</text>
+<text x="270" y="123" font-size="11.5" fill="#333" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="4">SDF</text>
+<text x="810" y="123" font-size="11.5" fill="#333" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="4">obs / reward</text>
+<text x="944" y="210" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">best model</text>
+<text x="814" y="294" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">load</text>
+<text x="530" y="293" font-size="11.5" fill="#333" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="4">/map, TF, results</text>
+<text x="674" y="370" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">coverage log</text>
+<rect x="30" y="424" width="14" height="12" fill="#E8F1FB" stroke="#1F5FA8"/><text x="50" y="434" font-size="12">simulation</text>
+<rect x="30" y="446" width="14" height="12" fill="#EAF6EC" stroke="#2E7D32"/><text x="50" y="456" font-size="12">ROS 2 nodes (this repo)</text>
+<rect x="30" y="468" width="14" height="12" fill="#FFF4E0" stroke="#B26A00"/><text x="50" y="478" font-size="12">Nav2 / SLAM (external)</text>
+<rect x="30" y="490" width="14" height="12" fill="#F3E8FA" stroke="#7B3FA6"/><text x="50" y="500" font-size="12">reinforcement learning</text>
+</svg>

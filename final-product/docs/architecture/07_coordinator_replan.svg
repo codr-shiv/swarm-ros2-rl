@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" font-family="sans-serif" font-size="13">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker></defs>
+<rect width="1100" height="470" fill="white"/>
+<text x="550.0" y="30" text-anchor="middle" font-size="20" font-weight="bold">Function level: frontier_coordinator._replan() (every 3 s)</text>
+<path d="M260,125.0 L285.0,125.0 L285.0,125.0 L310,125.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M530,125.0 L555.0,125.0 L555.0,125.0 L580,125.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M800,125.0 L825.0,125.0 L825.0,125.0 L850,125.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M955.0,160 L955.0,200.0 L955.0,200.0 L955.0,240" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M850,280.0 L825.0,280.0 L825.0,275.0 L800,275.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M580,275.0 L555.0,275.0 L555.0,275.0 L530,275.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M310,275.0 L285.0,275.0 L285.0,275.0 L260,275.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="40" y="90" width="220" height="70" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="150.0" y="121" text-anchor="middle" font-weight="bold">_detect_frontiers(/map)</text>
+<text x="150.0" y="137" text-anchor="middle" fill="#444" font-size="12">morphology + components</text>
+<rect x="310" y="90" width="220" height="70" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="420.0" y="121" text-anchor="middle" font-weight="bold">_deduplicate()</text>
+<text x="420.0" y="137" text-anchor="middle" fill="#444" font-size="12">merge within 1.5 m</text>
+<rect x="580" y="90" width="220" height="70" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="690.0" y="121" text-anchor="middle" font-weight="bold">drop blacklisted</text>
+<text x="690.0" y="137" text-anchor="middle" fill="#444" font-size="12">(failed &lt; 30 s ago)</text>
+<rect x="850" y="90" width="210" height="70" rx="9" fill="#FFE9E9" stroke="#C62828" stroke-width="1.8"/>
+<text x="955.0" y="121" text-anchor="middle" font-weight="bold">robot needs goal?</text>
+<text x="955.0" y="137" text-anchor="middle" fill="#444" font-size="12">stuck / reached / vanished</text>
+<rect x="850" y="240" width="210" height="80" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="955.0" y="268" text-anchor="middle" font-weight="bold">cost = distance</text>
+<text x="955.0" y="284" text-anchor="middle" fill="#444" font-size="12">+ 50/d(other goal)</text>
+<text x="955.0" y="300" text-anchor="middle" fill="#444" font-size="12">+ 50·other half</text>
+<rect x="580" y="240" width="220" height="70" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="690.0" y="279" text-anchor="middle" font-weight="bold">lowest cost frontier</text>
+<rect x="310" y="240" width="220" height="70" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="420.0" y="271" text-anchor="middle" font-weight="bold">_send_nav_goal()</text>
+<text x="420.0" y="287" text-anchor="middle" fill="#444" font-size="12">NavigateToPose</text>
+<rect x="40" y="240" width="220" height="70" rx="9" fill="#F2F2F2" stroke="#555555" stroke-width="1.8"/>
+<text x="150.0" y="279" text-anchor="middle" font-weight="bold">publish RViz markers</text>
+<text x="959" y="195" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">yes</text>
+<rect x="30" y="374" width="14" height="12" fill="#EAF6EC" stroke="#2E7D32"/><text x="50" y="384" font-size="12">coordinator logic</text>
+<rect x="30" y="396" width="14" height="12" fill="#F3E8FA" stroke="#7B3FA6"/><text x="50" y="406" font-size="12">heuristic cost</text>
+<rect x="30" y="418" width="14" height="12" fill="#FFF4E0" stroke="#B26A00"/><text x="50" y="428" font-size="12">Nav2</text>
+<rect x="30" y="440" width="14" height="12" fill="#FFE9E9" stroke="#C62828"/><text x="50" y="450" font-size="12">check</text>
+</svg>
