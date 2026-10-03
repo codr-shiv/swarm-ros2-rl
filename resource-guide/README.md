@@ -61,10 +61,4 @@ A curated path through the **foundations** behind this project: multi-robot expl
 
 ---
 
-**Suggested order for a newcomer:**
-1. Sections 1–2: get ROS 2 running and the TurtleBot3 simulation working.
-2. Sections 3–4: understand how a map is built and how a goal becomes motion.
-3. Section 5: understand what the exploration brain decides.
-4. Sections 6–7: understand how the RL brain learns it.
-
 Then read [`../final-product/README.md`](../final-product/README.md).
