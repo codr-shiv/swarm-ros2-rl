@@ -152,6 +152,14 @@ diagram('05_policy_node_tick.svg', 'Function level: ros_policy_node._tick() (run
     ('act', 'send', 'slot k', 'b', 't'), ('send', 'nav', '', 'r', 'l'), ('nav', 'log', '', 'r', 'l')],
     [('dec', 'check'), ('ros', 'ROS I/O'), ('rl', 'shared with training (rl_sim)'), ('nav', 'Nav2')])
 
+# 5b. Slide version of 5: input → policy → action ─────────────────────────
+diagram('05b_policy_node_simple.svg', 'ros_policy_node: one decision every 1 s', 1100, 560, {
+    'in': (40, 170, 300, 150, 'Live ROS 2 state\nmerged /map from SLAM\nrobot poses from TF\nNav2 goal status', 'ros'),
+    'pol': (400, 150, 300, 190, 'Same env code as training\n/map resampled to training grid\n12 frontier candidates, masked\n153-feature observation\npolicy.predict() picks one', 'rl'),
+    'out': (760, 170, 300, 150, 'Navigation action\nfrontier → world (x, y)\nNavigateToPose goal\nNav2 plans and drives', 'nav'),
+}, [('in', 'pol', '', 'r', 'l'), ('pol', 'out', 'slot k', 'r', 'l')],
+    [('ros', 'ROS I/O'), ('rl', 'shared with training (rl_sim): no reimplementation drift'), ('nav', 'Nav2')])
+
 # 6. Function-level: training environment step ──────────────────────────
 diagram('06_env_step.svg', 'Function level: FrontierExplorationEnv.step(action)', 1100, 560, {
     'act': (40, 90, 220, 70, 'action k (masked slot)\n→ candidate goal cell', 'rl'),

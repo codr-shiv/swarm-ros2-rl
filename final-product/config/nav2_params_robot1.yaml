@@ -63,7 +63,7 @@ robot1:
         stateful: True
         critics: ["RotateToGoal", "Oscillation", "ObstacleFootprint", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
         # Higher scale = more weight. Near-lethal cell (253) * 0.1 = 25.3, competitive with PathDist/GoalDist
-        ObstacleFootprint.scale: 0.5   # was 0.1: controller hugged walls and cut corners
+        ObstacleFootprint.scale: 1.0   # was 0.1: staying clear of obstacles now outweighs tracking the path exactly
         PathAlign.scale: 24.0
         PathAlign.forward_point_distance: 0.1
         GoalAlign.scale: 20.0
@@ -164,10 +164,14 @@ robot1:
       expected_planner_frequency: 20.0
       planner_plugins: ["GridBased"]
       GridBased:
-        plugin: "nav2_theta_star_planner/ThetaStarPlanner"
-        how_many_corners: 8
-        w_euc_dist: 1.0
+        # NavFn (Dijkstra) follows the costmap's cost gradient, so paths run
+        # through the middle of free space. Theta* (used before) shortcut along
+        # line of sight and grazed obstacles, which got robots pinned against
+        # cylinders ("No valid trajectories").
+        plugin: "nav2_navfn_planner/NavfnPlanner"
+        use_astar: false
         allow_unknown: true
+        tolerance: 0.25
 
   smoother_server:
     ros__parameters:
