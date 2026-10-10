@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="560" font-family="sans-serif" font-size="13">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker></defs>
+<rect width="820" height="560" fill="white"/>
+<text x="410.0" y="30" text-anchor="middle" font-size="20" font-weight="bold">Frames and map merging: how /map is built</text>
+<path d="M225.0,112 L225.0,138.5 L225.0,138.5 L225.0,165" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M595.0,112 L595.0,138.5 L595.0,138.5 L595.0,165" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M225.0,233 L225.0,261.5 L410.0,261.5 L410.0,290" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M595.0,233 L595.0,261.5 L410.0,261.5 L410.0,290" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M410.0,358 L410.0,384.0 L410.0,384.0 L410.0,410" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="95" y="60" width="260" height="52" rx="9" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.8"/>
+<text x="225.0" y="82" text-anchor="middle" font-weight="bold">robot1 in Gazebo</text>
+<text x="225.0" y="98" text-anchor="middle" fill="#444" font-size="12">lidar + wheel odometry</text>
+<rect x="465" y="60" width="260" height="52" rx="9" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.8"/>
+<text x="595.0" y="82" text-anchor="middle" font-weight="bold">robot2 in Gazebo</text>
+<text x="595.0" y="98" text-anchor="middle" fill="#444" font-size="12">lidar + wheel odometry</text>
+<rect x="75" y="165" width="300" height="68" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="225.0" y="187" text-anchor="middle" font-weight="bold">slam_toolbox (robot1)</text>
+<text x="225.0" y="203" text-anchor="middle" fill="#444" font-size="12">builds /robot1/map</text>
+<text x="225.0" y="219" text-anchor="middle" fill="#444" font-size="12">TF robot1/map → robot1/odom</text>
+<rect x="445" y="165" width="300" height="68" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="595.0" y="187" text-anchor="middle" font-weight="bold">slam_toolbox (robot2)</text>
+<text x="595.0" y="203" text-anchor="middle" fill="#444" font-size="12">builds /robot2/map</text>
+<text x="595.0" y="219" text-anchor="middle" fill="#444" font-size="12">TF robot2/map → robot2/odom</text>
+<rect x="240" y="290" width="340" height="68" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="410.0" y="312" text-anchor="middle" font-weight="bold">map_merge_node (2 Hz)</text>
+<text x="410.0" y="328" text-anchor="middle" fill="#444" font-size="12">reprojects both maps into one grid</text>
+<text x="410.0" y="344" text-anchor="middle" fill="#444" font-size="12">static TF map → robotN/map (offset 0)</text>
+<rect x="290" y="410" width="240" height="52" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="410.0" y="432" text-anchor="middle" font-weight="bold">/map (merged)</text>
+<text x="410.0" y="448" text-anchor="middle" fill="#444" font-size="12">used by the exploration brain</text>
+<text x="229" y="134" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">/robot1/scan, odom</text>
+<text x="599" y="134" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">/robot2/scan, odom</text>
+<text x="322" y="256" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">/robot1/map</text>
+<text x="506" y="256" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">/robot2/map</text>
+<text x="410" y="500" text-anchor="middle" font-size="12" fill="#444">TF chain per robot: map → robotN/map → robotN/odom → robotN/base_footprint → robotN/base_scan</text>
+<text x="410" y="522" text-anchor="middle" font-size="12" fill="#444">Offsets are 0: Gazebo odometry starts at each robot's spawn pose, so each SLAM map is already in world coordinates</text>
+</svg>

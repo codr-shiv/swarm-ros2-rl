@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="190" font-family="'Open Sans', sans-serif" font-size="13">
+<rect width="1100" height="190" fill="white"/>
+<text x="30" y="38" font-size="18" text-anchor="start" fill="#1C1C1C">Train in a fast 2D simulator</text>
+<text x="30" y="60" font-size="12.5" text-anchor="start" fill="#6E6E6E">same arena, frontiers and speed as Gazebo</text>
+<text x="30" y="116" font-size="34" text-anchor="start" fill="#2B5C8A">≈ 190</text>
+<text x="30" y="140" font-size="12" text-anchor="start" fill="#6E6E6E">decisions / s</text>
+<text x="30" y="157" font-size="12" text-anchor="start" fill="#2B5C8A" font-weight="bold">2D simulator</text>
+<text x="200" y="116" font-size="34" text-anchor="start" fill="#1C1C1C">≈ 0.7</text>
+<text x="200" y="140" font-size="12" text-anchor="start" fill="#6E6E6E">decisions / s</text>
+<text x="200" y="157" font-size="12" text-anchor="start" fill="#1C1C1C" font-weight="bold">Gazebo, 8 headless</text>
+<text x="370" y="116" font-size="34" text-anchor="start" fill="#2B5C8A">≈ 300×</text>
+<text x="370" y="140" font-size="12" text-anchor="start" fill="#6E6E6E">more decisions / s</text>
+<text x="370" y="157" font-size="12" text-anchor="start" fill="#2B5C8A" font-weight="bold">2D vs Gazebo</text>
+<line x1="545" y1="22" x2="545" y2="168" stroke="#D3D3D3" stroke-width="1"/>
+<text x="575" y="38" font-size="18" text-anchor="start" fill="#1C1C1C">Tech stack</text>
+<text x="575" y="82" font-size="13" text-anchor="start" fill="#2B5C8A" font-weight="bold">RL training</text>
+<text x="700" y="82" font-size="13" text-anchor="start" fill="#1C1C1C">Stable-Baselines3 · MaskablePPO · PyTorch</text>
+<text x="700" y="102" font-size="13" text-anchor="start" fill="#1C1C1C">Gymnasium · TensorBoard</text>
+<text x="575" y="144" font-size="13" text-anchor="start" fill="#B5562B" font-weight="bold">2D simulator</text>
+<text x="700" y="144" font-size="13" text-anchor="start" fill="#1C1C1C">NumPy · OpenCV</text>
+</svg>

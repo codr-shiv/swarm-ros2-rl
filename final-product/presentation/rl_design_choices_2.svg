@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" font-family="sans-serif" font-size="13">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker></defs>
+<rect width="1100" height="560" fill="white"/>
+<text x="550.0" y="32" text-anchor="middle" font-size="20" font-weight="bold">RL brain: how the decision is learned</text>
+<rect x="30" y="60" width="515" height="228" rx="12" fill="#FAFAFA" stroke="#DDD" stroke-width="1.5"/>
+<text x="48" y="90" font-size="16" font-weight="bold">1 · Pick waypoints, not velocities</text>
+<text x="48" y="110" font-size="12.5" fill="#666">one action = one whole trip to a frontier</text>
+<line x1="54.0" y1="148" x2="54.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="58.6" y1="148" x2="58.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="63.2" y1="148" x2="63.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="67.8" y1="148" x2="67.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="72.4" y1="148" x2="72.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="77.0" y1="148" x2="77.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="81.6" y1="148" x2="81.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="86.2" y1="148" x2="86.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="90.8" y1="148" x2="90.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="95.4" y1="148" x2="95.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="100.0" y1="148" x2="100.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="104.6" y1="148" x2="104.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="109.2" y1="148" x2="109.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="113.8" y1="148" x2="113.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="118.4" y1="148" x2="118.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="123.0" y1="148" x2="123.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="127.6" y1="148" x2="127.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="132.2" y1="148" x2="132.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="136.8" y1="148" x2="136.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="141.4" y1="148" x2="141.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="146.0" y1="148" x2="146.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="150.6" y1="148" x2="150.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="155.2" y1="148" x2="155.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="159.8" y1="148" x2="159.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="164.4" y1="148" x2="164.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="169.0" y1="148" x2="169.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="173.6" y1="148" x2="173.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="178.2" y1="148" x2="178.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="182.8" y1="148" x2="182.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="187.4" y1="148" x2="187.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="192.0" y1="148" x2="192.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="196.6" y1="148" x2="196.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="201.2" y1="148" x2="201.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="205.8" y1="148" x2="205.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="210.4" y1="148" x2="210.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="215.0" y1="148" x2="215.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="219.6" y1="148" x2="219.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="224.2" y1="148" x2="224.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="228.8" y1="148" x2="228.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="233.4" y1="148" x2="233.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="238.0" y1="148" x2="238.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="242.6" y1="148" x2="242.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="247.2" y1="148" x2="247.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="251.8" y1="148" x2="251.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="256.4" y1="148" x2="256.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="261.0" y1="148" x2="261.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="265.6" y1="148" x2="265.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="270.2" y1="148" x2="270.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="274.8" y1="148" x2="274.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="279.4" y1="148" x2="279.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="284.0" y1="148" x2="284.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="288.6" y1="148" x2="288.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="293.2" y1="148" x2="293.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="297.8" y1="148" x2="297.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="302.4" y1="148" x2="302.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="307.0" y1="148" x2="307.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="311.6" y1="148" x2="311.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="316.2" y1="148" x2="316.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="320.8" y1="148" x2="320.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="325.4" y1="148" x2="325.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="330.0" y1="148" x2="330.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="334.6" y1="148" x2="334.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="339.2" y1="148" x2="339.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="343.8" y1="148" x2="343.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="348.4" y1="148" x2="348.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="353.0" y1="148" x2="353.0" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="357.6" y1="148" x2="357.6" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="362.2" y1="148" x2="362.2" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="366.8" y1="148" x2="366.8" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<line x1="371.4" y1="148" x2="371.4" y2="168" stroke="#BBB" stroke-width="1.6"/>
+<text x="390" y="156" font-size="12.5" text-anchor="start" fill="#666" font-weight="bold">velocity commands</text>
+<text x="390" y="173" font-size="12.5" text-anchor="start" fill="#666">hundreds per episode</text>
+<polyline points="60,222 94,242 128,222 162,242 196,222 230,242 264,222 298,242 332,222 366,242" fill="none" stroke="#7B3FA6" stroke-width="2" stroke-dasharray="5 4"/>
+<circle cx="60" cy="222" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="60" y="226" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">1</text>
+<circle cx="94" cy="242" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="94" y="246" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">2</text>
+<circle cx="128" cy="222" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="128" y="226" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">3</text>
+<circle cx="162" cy="242" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="162" y="246" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">4</text>
+<circle cx="196" cy="222" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="196" y="226" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">5</text>
+<circle cx="230" cy="242" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="230" y="246" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">6</text>
+<circle cx="264" cy="222" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="264" y="226" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">7</text>
+<circle cx="298" cy="242" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="298" y="246" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">8</text>
+<circle cx="332" cy="222" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="332" y="226" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">9</text>
+<circle cx="366" cy="242" r="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="2"/>
+<text x="366" y="246" font-size="10" text-anchor="middle" fill="#7B3FA6" font-weight="bold">10</text>
+<text x="390" y="228" font-size="12.5" text-anchor="start" fill="#7B3FA6" font-weight="bold">frontier choices</text>
+<text x="390" y="245" font-size="12.5" text-anchor="start" fill="#7B3FA6">≈ 10 per episode</text>
+<rect x="555" y="60" width="515" height="228" rx="12" fill="#FAFAFA" stroke="#DDD" stroke-width="1.5"/>
+<text x="573" y="90" font-size="16" font-weight="bold">2 · Actor-critic network, trained with PPO</text>
+<text x="573" y="110" font-size="12.5" fill="#666">MaskablePPO · separate 2 × 128 tanh MLPs · 74k parameters</text>
+<rect x="573" y="140" width="62" height="44" rx="8" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.6"/>
+<text x="604.0" y="159.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">153</text>
+<text x="604.0" y="175.0" font-size="11" text-anchor="middle" fill="#666">obs</text>
+<rect x="653" y="130" width="48" height="64" rx="8" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.6"/>
+<text x="677.0" y="167.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">128</text>
+<rect x="715" y="130" width="48" height="64" rx="8" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.6"/>
+<text x="739.0" y="167.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">128</text>
+<rect x="805" y="118" width="247" height="38" rx="8" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.6"/>
+<text x="928.5" y="134.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">Actor: 12 slot scores</text>
+<text x="928.5" y="150.0" font-size="11" text-anchor="middle" fill="#666">mask invalid → softmax → pick slot</text>
+<rect x="805" y="168" width="247" height="38" rx="8" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.6"/>
+<text x="928.5" y="184.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">Critic: value of the state</text>
+<text x="928.5" y="200.0" font-size="11" text-anchor="middle" fill="#666">expected return, used for advantages</text>
+<path d="M635,162 L653,162" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M701,162 L715,162" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M763,154 L805,137" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M763,170 L805,187" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="573" y="220" width="150" height="42" rx="8" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.6"/>
+<text x="648.0" y="238.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">Collect</text>
+<text x="648.0" y="254.0" font-size="10.5" text-anchor="middle" fill="#666">2,048 decisions / update</text>
+<rect x="738" y="220" width="150" height="42" rx="8" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.6"/>
+<text x="813.0" y="238.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">Advantages (GAE)</text>
+<text x="813.0" y="254.0" font-size="10.5" text-anchor="middle" fill="#666">γ = 0.99 · λ = 0.95</text>
+<rect x="903" y="220" width="150" height="42" rx="8" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.6"/>
+<text x="978.0" y="238.0" font-size="12.5" text-anchor="middle" fill="#333" font-weight="bold">Clipped update</text>
+<text x="978.0" y="254.0" font-size="10.5" text-anchor="middle" fill="#666">10 epochs · ε = 0.2</text>
+<path d="M723,241 L738,241" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M888,241 L903,241" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M978,262 L978,274 L648,274 L648,262" fill="none" stroke="#333" stroke-width="1.4" marker-end="url(#arr)"/>
+<text paint-order="stroke" stroke="#FAFAFA" stroke-width="5" x="813" y="278" font-size="10.5" text-anchor="middle" fill="#666">repeat ≈ 146 times</text>
+<rect x="30" y="315" width="515" height="228" rx="12" fill="#FAFAFA" stroke="#DDD" stroke-width="1.5"/>
+<text x="48" y="345" font-size="16" font-weight="bold">3 · What the policy sees, does and earns</text>
+<rect x="48" y="363" width="82" height="22" rx="11" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.4"/>
+<text x="89" y="378" font-size="11" text-anchor="middle" fill="#1F5FA8" font-weight="bold">OBSERVE</text>
+<text x="142" y="379" font-size="12" text-anchor="start" fill="#333" font-weight="bold">153 numbers: 12 nearest frontiers × 12 features + 9 global</text>
+<text x="142" y="397" font-size="11.5" text-anchor="start" fill="#666">per frontier: position, distance, size, unknown area nearby,</text>
+<text x="142" y="413" font-size="11.5" text-anchor="start" fill="#666">distance to the other robot and its goal, heading, heuristic’s pick</text>
+<text x="142" y="429" font-size="11.5" text-anchor="start" fill="#666">global: both robot positions, other robot’s goal, % explored, time</text>
+<rect x="48" y="447" width="82" height="22" rx="11" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.4"/>
+<text x="89" y="462" font-size="11" text-anchor="middle" fill="#7B3FA6" font-weight="bold">ACT</text>
+<text x="142" y="463" font-size="12" text-anchor="start" fill="#333" font-weight="bold">pick 1 of the 12 frontiers (slot k)</text>
+<text x="142" y="479" font-size="11.5" text-anchor="start" fill="#666">empty or invalid slots are masked; Nav2 drives the robot there</text>
+<rect x="48" y="497" width="82" height="22" rx="11" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.4"/>
+<text x="89" y="512" font-size="11" text-anchor="middle" fill="#B26A00" font-weight="bold">REWARD</text>
+<text x="142" y="513" font-size="12" text-anchor="start" fill="#333" font-weight="bold">+0.1 per newly mapped m²  ·  −0.01 per second</text>
+<text x="142" y="529" font-size="11.5" text-anchor="start" fill="#666">every run maps the same area, so higher return = faster</text>
+<rect x="555" y="315" width="515" height="228" rx="12" fill="#FAFAFA" stroke="#DDD" stroke-width="1.5"/>
+<text x="573" y="345" font-size="16" font-weight="bold">4 · Train in a fast 2D simulator</text>
+<text x="573" y="365" font-size="12.5" fill="#666">same arena, frontier detector, speed and clearance as Gazebo</text>
+<rect x="575" y="381" width="220" height="96" rx="10" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.6"/>
+<text x="685" y="403" font-size="12.5" text-anchor="middle" fill="#7B3FA6" font-weight="bold">2D simulator</text>
+<text x="685" y="437" font-size="30" text-anchor="middle" fill="#7B3FA6" font-weight="bold">≈ 190</text>
+<text x="685" y="455" font-size="11.5" text-anchor="middle" fill="#666">decisions / s</text>
+<text x="685" y="470" font-size="10.5" text-anchor="middle" fill="#666">8 parallel envs (measured)</text>
+<rect x="830" y="381" width="220" height="96" rx="10" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.6"/>
+<text x="940" y="403" font-size="12.5" text-anchor="middle" fill="#1F5FA8" font-weight="bold">Gazebo, headless</text>
+<text x="940" y="437" font-size="30" text-anchor="middle" fill="#1F5FA8" font-weight="bold">≈ 0.7</text>
+<text x="940" y="455" font-size="11.5" text-anchor="middle" fill="#666">decisions / s</text>
+<text x="940" y="470" font-size="10.5" text-anchor="middle" fill="#666">8 parallel stacks, best case</text>
+<text x="812.5" y="505" font-size="15" text-anchor="middle" fill="#7B3FA6" font-weight="bold">≈ 300× more decisions per second</text>
+<text x="812.5" y="525" font-size="11" text-anchor="middle" fill="#666">policy converged after ≈ 30k decisions · Gazebo: ≈ 20 decisions per 240 s run</text>
+</svg>

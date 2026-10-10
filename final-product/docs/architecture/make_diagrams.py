@@ -13,7 +13,7 @@ COL = {'sim': '#E8F1FB', 'ros': '#EAF6EC', 'nav': '#FFF4E0', 'rl': '#F3E8FA', 'i
 EDGE = {'sim': '#1F5FA8', 'ros': '#2E7D32', 'nav': '#B26A00', 'rl': '#7B3FA6', 'io': '#555555', 'dec': '#C62828'}
 
 
-def diagram(name, title, w, h, nodes, edges, notes=()):
+def diagram(name, title, w, h, nodes, edges, notes=(), raw=()):
     """nodes: id -> (x, y, w, h, label, kind); edges: (src, dst, label, src_side, dst_side)."""
     p = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" font-family="sans-serif" font-size="13">',
          '<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">'
@@ -60,6 +60,7 @@ def diagram(name, title, w, h, nodes, edges, notes=()):
             yy = y + bh / 2 + (i - (len(lines) - 1) / 2) * 16 + 4
             p.append(f'<text x="{x + bw/2}" y="{yy:.0f}" text-anchor="middle"{bold}>{escape(line)}</text>')
     p.extend(labels)
+    p.extend(raw)
     for i, (kind, text) in enumerate(notes):
         p.append(f'<rect x="30" y="{h-30-22*(len(notes)-1-i)}" width="14" height="12" fill="{COL[kind]}" '
                  f'stroke="{EDGE[kind]}"/><text x="50" y="{h-20-22*(len(notes)-1-i)}" font-size="12">{escape(text)}</text>')
@@ -88,6 +89,97 @@ diagram('01_system_overview.svg', 'System architecture: data and control flow', 
     ('policy', 'brain', 'action', 'l', 'r'),
     ('sim2d', 'policy', 'trains', 't', 'b'),
 ], LEGEND)
+
+# 1b. System overview, top-down (slide version) ───────────────────────────
+STAGE = '<text x="40" y="{}" font-size="13" font-weight="bold" fill="#888">{}</text>'
+R = [24, 134, 244, 354, 464]          # row tops, evenly spaced; boxes are 52 high
+BH, MID = 52, 26
+diagram('../../presentation/system_architecture_topdown.svg', '',
+        1100, 560, {
+    'gz': (250, R[0], 440, BH, 'Gazebo Classic\narena + robot1, robot2 (lidar, diff drive)', 'sim'),
+    's1': (250, R[1], 200, BH, 'slam_toolbox (robot1)\n/robot1/map', 'nav'),
+    's2': (490, R[1], 200, BH, 'slam_toolbox (robot2)\n/robot2/map', 'nav'),
+    'merge': (330, R[2], 280, BH, 'map_merge_node\nboth maps → one /map', 'ros'),
+    'brain': (330, R[3], 280, BH, 'Exploration brain: picks frontiers\nheuristic coordinator  or  RL policy node', 'ros'),
+    'pol': (800, R[3], 220, BH, 'PPO policy\nppo_frontier_policy.zip', 'rl'),
+    'sim2d': (800, R[4], 220, BH, 'rl_sim\n2D sim + MaskablePPO', 'rl'),
+    'n1': (250, R[4], 200, BH, 'Nav2 (robot1)\nplan + drive + recover', 'nav'),
+    'n2': (490, R[4], 200, BH, 'Nav2 (robot2)\nplan + drive + recover', 'nav'),
+}, [
+    ('gz', 's1', '', 'b', 't'), ('gz', 's2', '', 'b', 't'),
+    ('s1', 'merge', '', 'b', 't'), ('s2', 'merge', '', 'b', 't'),
+    ('merge', 'brain', '/map (2 Hz)', 'b', 't'),
+    ('brain', 'n1', 'NavigateToPose goals', 'b', 't'), ('brain', 'n2', '', 'b', 't'),
+    ('pol', 'brain', 'chosen frontier', 'l', 'r'), ('sim2d', 'pol', '', 't', 'b'),
+], raw=[
+    # "scan + odom", centred on the fork under Gazebo
+    f'<rect x="432" y="{(R[0]+BH+R[1])//2-17}" width="76" height="16" fill="white"/>',
+    f'<text x="470" y="{(R[0]+BH+R[1])//2-5}" font-size="11.5" fill="#333" text-anchor="middle" '
+    'paint-order="stroke" stroke="white" stroke-width="4">scan + odom</text>',
+    # control loop: both robots' Nav2 velocity commands back up into Gazebo
+    f'<path d="M590,{R[4]+BH} L590,{R[4]+BH+23} L160,{R[4]+BH+23} L160,{R[4]+MID}" fill="none" '
+    'stroke="#B26A00" stroke-width="2" stroke-dasharray="7 4"/>',
+    f'<path d="M250,{R[4]+MID} L160,{R[4]+MID} L160,{R[0]+MID} L250,{R[0]+MID}" fill="none" stroke="#B26A00" '
+    'stroke-width="2" stroke-dasharray="7 4" marker-end="url(#arr)"/>',
+    f'<text x="150" y="{(R[0]+R[4])//2+MID}" font-size="12" fill="#B26A00" text-anchor="middle" '
+    f'transform="rotate(-90 150 {(R[0]+R[4])//2+MID})">/robotN/cmd_vel</text>',
+    # legend, top right
+    '<rect x="850" y="24" width="220" height="140" rx="8" fill="white" stroke="#ccc"/>',
+] + [STAGE.format(r + 31, t) for r, t in
+     zip(R, ['1 · SIMULATE', '2 · MAP', '3 · MERGE', '4 · DECIDE', '5 · ACT'])]
+  + [f'<rect x="866" y="{y}" width="14" height="12" rx="2" fill="{COL[k]}" stroke="{EDGE[k]}"/>'
+     f'<text x="890" y="{y + 10}" font-size="12">{t}</text>' for y, k, t in
+     [(38, 'sim', 'simulation'), (62, 'nav', 'SLAM / Nav2 (external)'), (86, 'ros', 'our ROS 2 nodes'),
+      (110, 'rl', 'reinforcement learning')]]
+  + ['<path d="M866,140 L880,140" stroke="#B26A00" stroke-width="2" stroke-dasharray="4 2"/>'
+     '<text x="890" y="144" font-size="12">velocity commands (loop)</text>'])
+
+# 1c. Nav2 inside one robot (slide version) ─────────────────────────────
+A = 'fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"'
+T = 'font-size="11.5" fill="#333" paint-order="stroke" stroke="white" stroke-width="4"'
+diagram('../../presentation/nav2_architecture.svg', '',
+        1100, 560, {
+    # three aligned columns: x-centres 270 (planning side), 550 (main line), 845 (robot side)
+    'merge': (170, 75, 200, 52, 'SLAM + map merge\nmerged occupancy grid', 'ros'),
+    'brain': (450, 75, 200, 52, 'Exploration brain\npicks the next frontier', 'ros'),
+    'bt': (420, 180, 260, 52, 'BT Navigator\nplan → drive → recover if stuck', 'nav'),
+    'planner': (155, 300, 230, 52, 'Planner\nglobal path to the frontier', 'nav'),
+    'ctrl': (425, 300, 250, 52, 'Controller\nfollows the path, avoids obstacles', 'nav'),
+    'beh': (745, 300, 200, 52, 'Recovery\nspin · back up · wait', 'nav'),
+    'gcm': (155, 410, 230, 52, 'Global costmap\nwhole arena · 1 Hz', 'nav'),
+    'lcm': (425, 410, 250, 52, 'Local costmap\n3 × 3 m around the robot · 5 Hz', 'nav'),
+    'gz': (745, 410, 200, 52, 'Robot in Gazebo\nwheels move, lidar scans', 'sim'),
+}, [
+    ('merge', 'brain', '/map', 'r', 'l'),
+    ('brain', 'bt', 'NavigateToPose (x, y)', 'b', 't'),
+    ('bt', 'planner', '', 'b', 't'), ('bt', 'ctrl', '', 'b', 't'), ('bt', 'beh', '', 'b', 't'),
+    ('planner', 'ctrl', 'path', 'r', 'l'),
+    ('gcm', 'planner', '', 't', 'b'), ('lcm', 'ctrl', '', 't', 'b'),
+], raw=[
+    f'<path d="M490,180 L490,127" {A}/>', f'<text x="482" y="158" {T} text-anchor="end">succeeded / failed</text>',
+    f'<path d="M675,326 L710,326 L710,436 L745,436" {A}/>', f'<text x="715" y="390" {T}>cmd_vel</text>',
+    f'<path d="M845,462 L845,500 L270,500 L270,462" {A}/>', f'<path d="M550,500 L550,462" {A}/>',
+    f'<text x="700" y="504" {T} text-anchor="middle">lidar scan</text>',
+])
+
+# 3b. Frames and map merging as data flow (slide version) ────────────────
+diagram('../../presentation/map_merging_flow.svg', 'Frames and map merging: how /map is built', 820, 560, {
+    'g1': (95, 60, 260, 52, 'robot1 in Gazebo\nlidar + wheel odometry', 'sim'),
+    'g2': (465, 60, 260, 52, 'robot2 in Gazebo\nlidar + wheel odometry', 'sim'),
+    's1': (75, 165, 300, 68, 'slam_toolbox (robot1)\nbuilds /robot1/map\nTF robot1/map → robot1/odom', 'nav'),
+    's2': (445, 165, 300, 68, 'slam_toolbox (robot2)\nbuilds /robot2/map\nTF robot2/map → robot2/odom', 'nav'),
+    'merge': (240, 290, 340, 68, 'map_merge_node (2 Hz)\nreprojects both maps into one grid\nstatic TF map → robotN/map (offset 0)', 'ros'),
+    'map': (290, 410, 240, 52, '/map (merged)\nused by the exploration brain', 'ros'),
+}, [
+    ('g1', 's1', '/robot1/scan, odom', 'b', 't'), ('g2', 's2', '/robot2/scan, odom', 'b', 't'),
+    ('s1', 'merge', '/robot1/map', 'b', 't'), ('s2', 'merge', '/robot2/map', 'b', 't'),
+    ('merge', 'map', '', 'b', 't'),
+], raw=[
+    '<text x="410" y="500" text-anchor="middle" font-size="12" fill="#444">TF chain per robot: '
+    'map → robotN/map → robotN/odom → robotN/base_footprint → robotN/base_scan</text>',
+    '<text x="410" y="522" text-anchor="middle" font-size="12" fill="#444">Offsets are 0: Gazebo odometry '
+    'starts at each robot\'s spawn pose, so each SLAM map is already in world coordinates</text>',
+])
 
 # 2. ROS 2 computation graph ─────────────────────────────────────────────
 diagram('02_ros_graph.svg', 'ROS 2 graph: nodes, topics and actions (per robot N = 1, 2)', 1100, 600, {
@@ -153,12 +245,22 @@ diagram('05_policy_node_tick.svg', 'Function level: ros_policy_node._tick() (run
     [('dec', 'check'), ('ros', 'ROS I/O'), ('rl', 'shared with training (rl_sim)'), ('nav', 'Nav2')])
 
 # 5b. Slide version of 5: input → policy → action ─────────────────────────
-diagram('05b_policy_node_simple.svg', 'ros_policy_node: one decision every 1 s', 1100, 560, {
-    'in': (40, 170, 300, 150, 'Live ROS 2 state\nmerged /map from SLAM\nrobot poses from TF\nNav2 goal status', 'ros'),
-    'pol': (400, 150, 300, 190, 'Same env code as training\n/map resampled to training grid\n12 frontier candidates, masked\n153-feature observation\npolicy.predict() picks one', 'rl'),
-    'out': (760, 170, 300, 150, 'Navigation action\nfrontier → world (x, y)\nNavigateToPose goal\nNav2 plans and drives', 'nav'),
-}, [('in', 'pol', '', 'r', 'l'), ('pol', 'out', 'slot k', 'r', 'l')],
-    [('ros', 'ROS I/O'), ('rl', 'shared with training (rl_sim): no reimplementation drift'), ('nav', 'Nav2')])
+diagram('05b_policy_node_simple.svg', 'ros_policy_node: from the Gazebo world to a frontier choice (every 1 s)', 1100, 560, {
+    'gz': (40, 60, 230, 70, 'Gazebo 3D world\n2 TurtleBot3s: lidar + odometry', 'sim'),
+    'map': (310, 60, 230, 70, 'SLAM + map merge\n2D /map, robot poses from TF', 'nav'),
+    'grid': (580, 60, 230, 70, 'Resample to training grid\n0.05 m cells, as in rl_sim', 'ros'),
+    'cand': (850, 60, 210, 70, 'Frontier candidates\n12 nearest reachable', 'rl'),
+    'per': (40, 175, 270, 135, 'Per candidate: 12 numbers\nposition, distance, size\nunknown area around it\ndistance to other robot + its goal\nheading, heuristic\'s pick', 'rl'),
+    'glob': (40, 335, 270, 105, 'Global: 9 numbers\nboth robot positions\nother robot\'s goal\n% mapped, elapsed time', 'rl'),
+    'obs': (380, 265, 200, 80, '153-D observation\n12 × 12 + 9', 'rl'),
+    'ppo': (630, 265, 200, 80, 'PPO policy\nscores the 12 slots\n(empty slots masked)', 'rl'),
+    'goal': (880, 265, 190, 80, 'Best frontier\nslot k → world (x, y)\nNavigateToPose → Nav2', 'nav'),
+}, [('gz', 'map', '', 'r', 'l'), ('map', 'grid', '', 'r', 'l'), ('grid', 'cand', '', 'r', 'l'),
+    ('cand', 'per', 'for the robot that needs a goal', 'b', 't'),
+    ('per', 'obs', '', 'r', 'l'), ('glob', 'obs', '', 'r', 'l'),
+    ('obs', 'ppo', '', 'r', 'l'), ('ppo', 'goal', 'slot k', 'r', 'l')],
+    [('sim', 'Gazebo'), ('nav', 'SLAM / Nav2'), ('ros', 'ROS glue'),
+     ('rl', 'same env code as training (no reimplementation drift)')])
 
 # 6. Function-level: training environment step ──────────────────────────
 diagram('06_env_step.svg', 'Function level: FrontierExplorationEnv.step(action)', 1100, 560, {

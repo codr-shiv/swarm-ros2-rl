@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="560" font-family="sans-serif" font-size="13">
+<defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#333"/></marker></defs>
+<rect width="1100" height="560" fill="white"/>
+<text x="550.0" y="30" text-anchor="middle" font-size="20" font-weight="bold"></text>
+<path d="M470.0,76 L470.0,105.0 L350.0,105.0 L350.0,134" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M470.0,76 L470.0,105.0 L590.0,105.0 L590.0,134" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M350.0,186 L350.0,215.0 L470.0,215.0 L470.0,244" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M590.0,186 L590.0,215.0 L470.0,215.0 L470.0,244" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M470.0,296 L470.0,325.0 L470.0,325.0 L470.0,354" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M470.0,406 L470.0,435.0 L350.0,435.0 L350.0,464" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M470.0,406 L470.0,435.0 L590.0,435.0 L590.0,464" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M800,380.0 L705.0,380.0 L705.0,380.0 L610,380.0" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<path d="M910.0,464 L910.0,435.0 L910.0,435.0 L910.0,406" fill="none" stroke="#333" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="250" y="24" width="440" height="52" rx="9" fill="#E8F1FB" stroke="#1F5FA8" stroke-width="1.8"/>
+<text x="470.0" y="46" text-anchor="middle" font-weight="bold">Gazebo Classic</text>
+<text x="470.0" y="62" text-anchor="middle" fill="#444" font-size="12">arena + robot1, robot2 (lidar, diff drive)</text>
+<rect x="250" y="134" width="200" height="52" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="350.0" y="156" text-anchor="middle" font-weight="bold">slam_toolbox (robot1)</text>
+<text x="350.0" y="172" text-anchor="middle" fill="#444" font-size="12">/robot1/map</text>
+<rect x="490" y="134" width="200" height="52" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="590.0" y="156" text-anchor="middle" font-weight="bold">slam_toolbox (robot2)</text>
+<text x="590.0" y="172" text-anchor="middle" fill="#444" font-size="12">/robot2/map</text>
+<rect x="330" y="244" width="280" height="52" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="470.0" y="266" text-anchor="middle" font-weight="bold">map_merge_node</text>
+<text x="470.0" y="282" text-anchor="middle" fill="#444" font-size="12">both maps → one /map</text>
+<rect x="330" y="354" width="280" height="52" rx="9" fill="#EAF6EC" stroke="#2E7D32" stroke-width="1.8"/>
+<text x="470.0" y="376" text-anchor="middle" font-weight="bold">Exploration brain: picks frontiers</text>
+<text x="470.0" y="392" text-anchor="middle" fill="#444" font-size="12">heuristic coordinator  or  RL policy node</text>
+<rect x="800" y="354" width="220" height="52" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="910.0" y="376" text-anchor="middle" font-weight="bold">PPO policy</text>
+<text x="910.0" y="392" text-anchor="middle" fill="#444" font-size="12">ppo_frontier_policy.zip</text>
+<rect x="800" y="464" width="220" height="52" rx="9" fill="#F3E8FA" stroke="#7B3FA6" stroke-width="1.8"/>
+<text x="910.0" y="486" text-anchor="middle" font-weight="bold">rl_sim</text>
+<text x="910.0" y="502" text-anchor="middle" fill="#444" font-size="12">2D sim + MaskablePPO</text>
+<rect x="250" y="464" width="200" height="52" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="350.0" y="486" text-anchor="middle" font-weight="bold">Nav2 (robot1)</text>
+<text x="350.0" y="502" text-anchor="middle" fill="#444" font-size="12">plan + drive + recover</text>
+<rect x="490" y="464" width="200" height="52" rx="9" fill="#FFF4E0" stroke="#B26A00" stroke-width="1.8"/>
+<text x="590.0" y="486" text-anchor="middle" font-weight="bold">Nav2 (robot2)</text>
+<text x="590.0" y="502" text-anchor="middle" fill="#444" font-size="12">plan + drive + recover</text>
+<text x="474" y="320" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">/map (2 Hz)</text>
+<text x="414" y="430" font-size="11.5" fill="#333" text-anchor="start" paint-order="stroke" stroke="white" stroke-width="4">NavigateToPose goals</text>
+<text x="705" y="373" font-size="11.5" fill="#333" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="4">chosen frontier</text>
+<rect x="432" y="88" width="76" height="16" fill="white"/>
+<text x="470" y="100" font-size="11.5" fill="#333" text-anchor="middle" paint-order="stroke" stroke="white" stroke-width="4">scan + odom</text>
+<path d="M590,516 L590,539 L160,539 L160,490" fill="none" stroke="#B26A00" stroke-width="2" stroke-dasharray="7 4"/>
+<path d="M250,490 L160,490 L160,50 L250,50" fill="none" stroke="#B26A00" stroke-width="2" stroke-dasharray="7 4" marker-end="url(#arr)"/>
+<text x="150" y="270" font-size="12" fill="#B26A00" text-anchor="middle" transform="rotate(-90 150 270)">/robotN/cmd_vel</text>
+<rect x="850" y="24" width="220" height="140" rx="8" fill="white" stroke="#ccc"/>
+<text x="40" y="55" font-size="13" font-weight="bold" fill="#888">1 · SIMULATE</text>
+<text x="40" y="165" font-size="13" font-weight="bold" fill="#888">2 · MAP</text>
+<text x="40" y="275" font-size="13" font-weight="bold" fill="#888">3 · MERGE</text>
+<text x="40" y="385" font-size="13" font-weight="bold" fill="#888">4 · DECIDE</text>
+<text x="40" y="495" font-size="13" font-weight="bold" fill="#888">5 · ACT</text>
+<rect x="866" y="38" width="14" height="12" rx="2" fill="#E8F1FB" stroke="#1F5FA8"/><text x="890" y="48" font-size="12">simulation</text>
+<rect x="866" y="62" width="14" height="12" rx="2" fill="#FFF4E0" stroke="#B26A00"/><text x="890" y="72" font-size="12">SLAM / Nav2 (external)</text>
+<rect x="866" y="86" width="14" height="12" rx="2" fill="#EAF6EC" stroke="#2E7D32"/><text x="890" y="96" font-size="12">our ROS 2 nodes</text>
+<rect x="866" y="110" width="14" height="12" rx="2" fill="#F3E8FA" stroke="#7B3FA6"/><text x="890" y="120" font-size="12">reinforcement learning</text>
+<path d="M866,140 L880,140" stroke="#B26A00" stroke-width="2" stroke-dasharray="4 2"/><text x="890" y="144" font-size="12">velocity commands (loop)</text>
+</svg>
